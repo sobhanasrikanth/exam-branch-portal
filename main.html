@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Portal - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+        .dashboard-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <img src="logo.png" alt="KLH Logo" class="h-10 w-10 mr-4">
+                    <h1 class="text-xl font-bold text-gray-800">Koneru Lakshmaiah Education Foundation</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <img src="profile.png" alt="Profile" class="h-10 w-10 rounded-full">
+                    <span id="userRollNumber" class="font-medium text-gray-700"></span>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="calendar.html" class="dashboard-card bg-white rounded-lg shadow-md p-6 text-center hover:bg-purple-50 transition">
+                <i class="ri-calendar-line text-5xl text-purple-600 mb-4 block"></i>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Academic Calendar</h2>
+                <p class="text-gray-600">View important dates and events</p>
+            </a>
+
+            <a href="queries.html" class="dashboard-card bg-white rounded-lg shadow-md p-6 text-center hover:bg-green-50 transition">
+                <i class="ri-question-line text-5xl text-green-600 mb-4 block"></i>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Student Queries</h2>
+                <p class="text-gray-600">Submit and track your issues</p>
+            </a>
+
+            <a href="hallticket.html" class="dashboard-card bg-white rounded-lg shadow-md p-6 text-center hover:bg-blue-50 transition">
+                <i class="ri-ticket-2-line text-5xl text-blue-600 mb-4 block"></i>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Hall Ticket</h2>
+                <p class="text-gray-600">Download your exam hall ticket</p>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('userRollNumber').textContent = localStorage.getItem('userRollNumber');
+
+        function logout() {
+            localStorage.removeItem('userRollNumber');
+            window.location.href = 'index.html';
+        }
+
+        if (!localStorage.getItem('userRollNumber')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

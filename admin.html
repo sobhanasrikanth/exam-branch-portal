@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Branch - Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-light: #f4f6f9;
+            --text-dark: #2c3e50;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light);
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 20px;
+            background-color: var(--background-light);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 10px 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            margin-left: 10px;
+            width: 300px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-right: 20px;
+            color: var(--primary-color);
+        }
+
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .card-content p {
+            color: #6c757d;
+        }
+
+        .issues-table {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+        }
+
+        .issues-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .issues-table th {
+            text-align: left;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .issues-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-new { background-color: #e9ecef; color: #495057; }
+        .status-in-progress { background-color: #fff3cd; color: #856404; }
+        .status-resolved { background-color: #d4edda; color: #155724; }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-update {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        #filterModal, #clearIssuesModal, #updateIssueModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content, .clear-issues-modal-content, .update-issue-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: black;
+        }
+
+        .clear-issues-options {
+            margin-top: 20px;
+        }
+
+        .clear-issues-options label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .clear-issues-options select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .clear-issues-buttons, .update-form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .filter-controls select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            min-width: 150px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .reset-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="logo.png" alt="KLH Logo">
+                <span class="logo-text">Exam Branch</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="menu-item active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" class="menu-item" data-section="issue-management"><i class="fas fa-ticket-alt"></i> Issue Management</a></li>
+                <li><a href="#" class="menu-item" data-section="academic-calendar"><i class="fas fa-calendar-alt"></i> Academic Calendar</a></li>
+                <li><a href="#" class="menu-item" data-section="hall-ticket"><i class="fas fa-print"></i> Hall Ticket Generation</a></li>
+                <li><a href="#" class="menu-item" data-section="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="#" id="clearIssuesButton" class="menu-item" data-section="clear-issues"><i class="fas fa-trash-alt"></i> Clear Issues</a></li>
+                <li><a href="#" class="menu-item" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search issues, students...">
+                </div>
+                <div class="user-profile">
+                    <img src="profile.png" alt="Admin Profile">
+                    <span>Admin Panel</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="dashboard-section active">
+                <!-- Cards and Issues Table content remains the same -->
+                <section class="cards-container">
+                    <div class="dashboard-card" onclick="showFilteredIssues('total')">
+                        <i class="fas fa-clipboard-list card-icon"></i>
+                        <div class="card-content">
+                            <h3>Total Issues</h3>
+                            <p id="totalIssues">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" onclick="showFilteredIssues('pending')">
+                        <i class="fas fa-spinner card-icon"></i>
+                        <div class="card-content">
+                            <h3>Pending Issues</h3>
+                            <p id="pendingIssues">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" onclick="showFilteredIssues('resolved')">
+                        <i class="fas fa-check-circle card-icon"></i>
+                        <div class="card-content">
+                            <h3>Resolved Issues</h3>
+                            <p id="resolvedIssues">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" onclick="showFilteredIssues('new')">
+                        <i class="fas fa-bell card-icon"></i>
+                        <div class="card-content">
+                            <h3>New Issues</h3>
+                            <p id="newIssues">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="issues-table">
+                    <h2>Recent Issues</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Issue Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuesTableBody"></tbody>
+                    </table>
+                </section>
+            </section>
+
+            <!-- Issue Management Section -->
+            <section id="issue-management" class="dashboard-section">
+                <h1>Issue Management</h1>
+                <div class="issues-table">
+                    <div class="filter-controls">
+                        <div>
+                            <select id="issueTypeFilter">
+                                <option value="all">All Issue Types</option>
+                                <option value="Hall Ticket Issue">Hall Ticket Issue</option>
+                                <option value="Name Misprint">Name Misprint</option>
+                                <option value="Marks Issue">Marks Issue</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select id="statusTypeFilter">
+                                <option value="all">All Statuses</option>
+                                <option value="New">New</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                            </select>
+                        </div>
+                        <div class="filter-buttons">
+                            <button id="applyFiltersBtn" class="filter-btn">Apply Filters</button>
+                            <button id="resetFiltersBtn" class="reset-btn">Reset</button>
+                        </div>
+                    </div>
+                    <h2>All Issues</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Student Name</th>
+                                <th>Issue Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allIssuesTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Other existing sections -->
+            <section id="academic-calendar" class="dashboard-section">
+                <h1>Academic Calendar</h1>
+                <p>Academic calendar content will be added here.</p>
+            </section>
+
+            <section id="hall-ticket" class="dashboard-section">
+                <h1>Hall Ticket Generation</h1>
+                <!-- Add this code inside the existing "hall-ticket" section of admin.html -->
+<div class="issues-table">
+    <h2>Hall Ticket Availability Settings</h2>
+    <p class="text-gray-600 mb-4">Control which hall tickets are available to students. Only enabled hall tickets can be generated by students.</p>
+    
+    <div class="mb-4">
+        <h3 class="text-lg font-medium mb-2">ODD Semester</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="odd" data-exam="in1">
+                    <span class="ml-2">Internal Exam 1</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="odd" data-exam="in2">
+                    <span class="ml-2">Internal Exam 2</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="odd" data-exam="lab">
+                    <span class="ml-2">Lab Exam</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="odd" data-exam="end">
+                    <span class="ml-2">End Semester</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <h3 class="text-lg font-medium mb-2">EVEN Semester</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="even" data-exam="in1">
+                    <span class="ml-2">Internal Exam 1</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="even" data-exam="in2">
+                    <span class="ml-2">Internal Exam 2</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="even" data-exam="lab">
+                    <span class="ml-2">Lab Exam</span>
+                </label>
+            </div>
+            <div class="p-3 border rounded-lg">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" class="hall-ticket-toggle form-checkbox h-5 w-5 text-blue-600" data-semester="even" data-exam="end">
+                    <span class="ml-2">End Semester</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex justify-end mt-4">
+        <button id="saveHallTicketSettings" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            <i class="fas fa-save mr-2"></i>Save Settings
+        </button>
+    </div>
+</div>
+                <div class="issues-table">
+                    <!-- ... Hall ticket settings code from first artifact ... -->
+                </div>
+            </section>
+
+            <section id="analytics" class="dashboard-section">
+                <h1>Analytics</h1>
+                <p>Analytics dashboard will be added here.</p>
+            </section>
+
+            <section id="settings" class="dashboard-section">
+                <h1>Settings</h1>
+                <p>Administrative settings will be added here.</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Filter Modal -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="filterModalTitle">Filtered Issues</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Student Name</th>
+                        <th>Issue Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="filteredIssuesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Update Issue Modal -->
+    <div id="updateIssueModal" class="modal">
+        <div class="update-issue-modal-content">
+            <span class="close-btn" id="closeUpdateModal">&times;</span>
+            <h2>Update Issue</h2>
+            
+            <form id="updateIssueForm">
+                <input type="hidden" id="updateIssueId">
+                
+                <div class="form-group">
+                    <label>Roll Number:</label>
+                    <input type="text" id="updateRollNumber" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>Student Name:</label>
+                    <input type="text" id="updateStudentName" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>Issue Type:</label>
+                    <input type="text" id="updateIssueType" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="updateDescription" class="form-control" readonly></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Status:</label>
+                    <select id="updateStatus" class="form-control">
+                        <option value="New">New</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Admin Remarks:</label>
+                    <textarea id="updateAdminRemarks" class="form-control" placeholder="Add your remarks here..."></textarea>
+                </div>
+                
+                <div class="update-form-buttons">
+                    <button type="submit" class="btn btn-update">Update Issue</button>
+                    <button type="button" id="cancelUpdateBtn" class="btn btn-view">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Clear Issues Modal -->
+    <div id="clearIssuesModal" class="modal">
+        <div class="clear-issues-modal-content">
+            <h2>Clear Issues</h2>
+            <p>Select how you want to clear issues:</p>
+            
+            <div class="clear-issues-options">
+                <label>
+                    <input type="radio" name="clearOption" value="all" checked>
+                    Clear All Issues
+                </label>
+                
+                <label>
+                    <input type="radio" name="clearOption" value="specific">
+                    Clear Issues by Type
+                </label>
+                
+                <select id="issueTypeSelect" disabled>
+                    <option value="">Select Issue Type</option>
+                    <option value="Hall Ticket Issue">Hall Ticket Issue</option>
+                    <option value="Name Misprint">Name Misprint</option>
+                    <option value="Marks Issue">Marks Issue</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="clear-issues-buttons">
+                <button id="confirmClearIssues" class="btn btn-update">Clear Issues</button>
+                <button id="cancelClearIssues" class="btn btn-view">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication Check
+        if (localStorage.getItem('userRollNumber') !== 'admin') {
+            window.location.href = 'index.html';
+        }
+
+        // Navigation Menu
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all menu items
+                document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all dashboard sections
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected section
+                const sectionId = this.getAttribute('data-section');
+                if (sectionId !== 'clear-issues') {
+                    document.getElementById(sectionId).classList.add('active');
+                }
+                
+                // If navigating to issue management, refresh the table
+                if (sectionId === 'issue-management') {
+                    displayAllIssues();
+                }
+            });
+        });
+
+        // Retrieve and process queries
+        function getQueries() {
+            return JSON.parse(localStorage.getItem('queries')) || [];
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const queries = getQueries();
+            const totalIssues = queries.length;
+            const pendingIssues = queries.filter(q => q.status === 'In Progress').length;
+            const resolvedIssues = queries.filter(q => q.status === 'Resolved').length;
+            const newIssues = queries.filter(q => q.status === 'New').length;
+
+            document.getElementById('totalIssues').textContent = totalIssues;
+            document.getElementById('pendingIssues').textContent = pendingIssues;
+            document.getElementById('resolvedIssues').textContent = resolvedIssues;
+            document.getElementById('newIssues').textContent = newIssues;
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            const statusMap = {
+                'New': 'status-new',
+                'In Progress': 'status-in-progress',
+                'Resolved': 'status-resolved'
+            };
+            return statusMap[status] || 'status-new';
+        }
+
+        // Display recent issues
+        function displayRecentIssues() {
+            const queries = getQueries();
+            const tableBody = document.getElementById('issuesTableBody');
+            tableBody.innerHTML = '';
+
+            // Sort by date and take last 5 issues
+            const recentIssues = queries
+                .sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted))
+                .slice(0, 5);
+
+            recentIssues.forEach(query => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${query.rollNumber}</td>
+                    <td>${query.name}</td>
+                    <td>${query.issueType}</td>
+                    <td><span class="status-badge ${getStatusBadgeClass(query.status)}">${query.status}</span></td>
+                    <td class="action-buttons">
+                        <a href="#" class="btn btn-view" onclick="viewIssueDetails('${query.id}')">View</a>
+                        <a href="#" class="btn btn-update" onclick="updateIssue('${query.id}')">Update</a>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Display all issues in the Issue Management section
+        function displayAllIssues(filteredIssues = null) {
+            const queries = filteredIssues || getQueries();
+            const tableBody = document.getElementById('allIssuesTableBody');
+            tableBody.innerHTML = '';
+
+            if (queries.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align: center; padding: 20px;">No issues found</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            queries.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted))
+                .forEach(query => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${query.rollNumber}</td>
+                        <td>${query.name}</td>
+                        <td>${query.issueType}</td>
+                        <td><span class="status-badge ${getStatusBadgeClass(query.status)}">${query.status}</span></td>
+                        <td class="action-buttons">
+                            <a href="#" class="btn btn-view" onclick="viewIssueDetails('${query.id}')">View</a>
+                            <a href="#" class="btn btn-update" onclick="updateIssue('${query.id}')">Update</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+        }
+
+        // View issue details
+        function viewIssueDetails(id) {
+            const queries = getQueries();
+            const issue = queries.find(q => q.id === id);
+            
+            if (issue) {
+                alert(`
+Issue Details:
+-----------------------------------------
+Roll Number: ${issue.rollNumber}
+Name: ${issue.name}
+Issue Type: ${issue.issueType}
+Description: ${issue.description}
+Status: ${issue.status}
+Submitted: ${new Date(issue.dateSubmitted).toLocaleString()}
+Last Updated: ${issue.lastUpdated ? new Date(issue.lastUpdated).toLocaleString() : 'Not updated'}
+Admin Remarks: ${issue.adminRemarks || 'No remarks yet'}
+-----------------------------------------`);
+            }
+        }
+
+        // Update issue - Open the update modal and populate data
+        function updateIssue(id) {
+            const queries = getQueries();
+            const issue = queries.find(q => q.id === id);
+            
+            if (issue) {
+                // Populate form fields
+                document.getElementById('updateIssueId').value = issue.id;
+                document.getElementById('updateRollNumber').value = issue.rollNumber;
+                document.getElementById('updateStudentName').value = issue.name;
+                document.getElementById('updateIssueType').value = issue.issueType;
+                document.getElementById('updateDescription').value = issue.description;
+                document.getElementById('updateStatus').value = issue.status;
+                document.getElementById('updateAdminRemarks').value = issue.adminRemarks || '';
+                
+                // Show the modal
+                document.getElementById('updateIssueModal').style.display = 'block';
+            }
+        }
+
+        // Handle update form submission
+        document.getElementById('updateIssueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const issueId = document.getElementById('updateIssueId').value;
+            const newStatus = document.getElementById('updateStatus').value;
+            const adminRemarks = document.getElementById('updateAdminRemarks').value;
+            
+            // Get all queries
+            const queries = getQueries();
+            // Find the issue to update
+            const issueIndex = queries.findIndex(q => q.id === issueId);
+            
+            if (issueIndex !== -1) {
+                // Update the issue
+                queries[issueIndex].status = newStatus;
+                queries[issueIndex].adminRemarks = adminRemarks;
+                queries[issueIndex].lastUpdated = new Date().toISOString();
+                
+                // Save back to localStorage
+                localStorage.setItem('queries', JSON.stringify(queries));
+                
+                // Close the modal
+                document.getElementById('updateIssueModal').style.display = 'none';
+                
+                // Refresh the data display
+                initializeDashboard();
+                
+                // Also refresh issue management page if it's active
+                if (document.getElementById('issue-management').classList.contains('active')) {
+                    applyIssueFilters();
+                }
+                
+                // Show success message
+                alert('Issue updated successfully!');
+            }
+        });
+
+        // Apply filters to issue management page
+        function applyIssueFilters() {
+            const issueType = document.getElementById('issueTypeFilter').value;
+            const statusType = document.getElementById('statusTypeFilter').value;
+            const queries = getQueries();
+            
+            let filteredQueries = queries;
+            
+            // Apply issue type filter
+            if (issueType !== 'all') {
+                filteredQueries = filteredQueries.filter(query => query.issueType === issueType);
+            }
+            
+            // Apply status filter
+            if (statusType !== 'all') {
+                filteredQueries = filteredQueries.filter(query => query.status === statusType);
+            }
+            
+            // Display filtered issues
+            displayAllIssues(filteredQueries);
+        }
+        
+        // Apply filters button event listener
+        document.getElementById('applyFiltersBtn').addEventListener('click', function() {
+            applyIssueFilters();
+        });
+        
+        // Reset filters button event listener
+        document.getElementById('resetFiltersBtn').addEventListener('click', function() {
+            document.getElementById('issueTypeFilter').value = 'all';
+            document.getElementById('statusTypeFilter').value = 'all';
+            displayAllIssues();
+        });
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchQuery = this.value.toLowerCase();
+            if (document.getElementById('issue-management').classList.contains('active')) {
+                const queries = getQueries();
+                const filteredQueries = queries.filter(query => 
+                    query.rollNumber.toLowerCase().includes(searchQuery) ||
+                    query.name.toLowerCase().includes(searchQuery) ||
+                    query.issueType.toLowerCase().includes(searchQuery) ||
+                    query.description.toLowerCase().includes(searchQuery)
+                );
+                displayAllIssues(filteredQueries);
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userRollNumber');
+            window.location.href = 'index.html';
+        }
+
+        // Show filtered issues
+        function showFilteredIssues(filterType) {
+            const queries = getQueries();
+            const filterModal = document.getElementById('filterModal');
+            const filteredTableBody = document.getElementById('filteredIssuesTableBody');
+            const filterModalTitle = document.getElementById('filterModalTitle');
+            
+            // Filter logic
+            let filteredIssues = [];
+            switch(filterType) {
+                case 'total':
+                    filteredIssues = queries;
+                    filterModalTitle.textContent = 'All Issues';
+                    break;
+                case 'pending':
+                    filteredIssues = queries.filter(q => q.status === 'In Progress');
+                    filterModalTitle.textContent = 'Pending Issues';
+                    break;
+                case 'resolved':
+                    filteredIssues = queries.filter(q => q.status === 'Resolved');
+                    filterModalTitle.textContent = 'Resolved Issues';
+                    break;
+                case 'new':
+                    filteredIssues = queries.filter(q => q.status === 'New');
+                    filterModalTitle.textContent = 'New Issues';
+                    break;
+            }
+
+            // Clear previous filtered results
+            filteredTableBody.innerHTML = '';
+
+            // Populate filtered issues table
+            filteredIssues.forEach(query => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${query.rollNumber}</td>
+                    <td>${query.name}</td>
+                    <td>${query.issueType}</td>
+                    <td><span class="status-badge ${getStatusBadgeClass(query.status)}">${query.status}</span></td>
+                    <td class="action-buttons">
+                        <a href="#" class="btn btn-view" onclick="viewIssueDetails('${query.id}')">View</a>
+                        <a href="#" class="btn btn-update" onclick="updateIssue('${query.id}')">Update</a>
+                    </td>
+                `;
+                filteredTableBody.appendChild(row);
+            });
+
+            // Show the filter modal
+            filterModal.style.display = 'block';
+        }
+
+        // Clear Issues Functionality
+        document.getElementById('clearIssuesButton').addEventListener('click', function() {
+            document.getElementById('clearIssuesModal').style.display = 'block';
+        });
+
+        // Toggle issue type select based on radio button
+        document.querySelectorAll('input[name="clearOption"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const issueTypeSelect = document.getElementById('issueTypeSelect');
+                issueTypeSelect.disabled = this.value !== 'specific';
+            });
+        });
+
+        // Cancel button for clear issues modal
+        document.getElementById('cancelClearIssues').addEventListener('click', function() {
+            document.getElementById('clearIssuesModal').style.display = 'none';
+        });
+
+        // Confirm clear issues
+        document.getElementById('confirmClearIssues').addEventListener('click', function() {
+            const clearOption = document.querySelector('input[name="clearOption"]:checked').value;
+            const issueType = document.getElementById('issueTypeSelect').value;
+            
+            let queries = JSON.parse(localStorage.getItem('queries')) || [];
+            
+            if (clearOption === 'all') {
+                // Clear all issues
+                queries = [];
+                alert('All issues have been cleared.');
+            } else if (clearOption === 'specific' && issueType) {
+                // Clear specific type of issues
+                queries = queries.filter(query => query.issueType !== issueType);
+                alert(`Issues of type "${issueType}" have been cleared.`);
+            }
+            
+            // Save updated queries
+            localStorage.setItem('queries', JSON.stringify(queries));
+            
+            // Close modal and refresh dashboard
+            document.getElementById('clearIssuesModal').style.display = 'none';
+            initializeDashboard();
+        });
+
+        // Close the update modal
+        document.getElementById('closeUpdateModal').addEventListener('click', function() {
+            document.getElementById('updateIssueModal').style.display = 'none';
+        });
+
+        // Cancel update
+        document.getElementById('cancelUpdateBtn').addEventListener('click', function() {
+            document.getElementById('updateIssueModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const filterModal = document.getElementById('filterModal');
+            const clearIssuesModal = document.getElementById('clearIssuesModal');
+            const updateIssueModal = document.getElementById('updateIssueModal');
+            
+            if (event.target === filterModal) {
+                filterModal.style.display = 'none';
+            }
+            
+            if (event.target === clearIssuesModal) {
+                clearIssuesModal.style.display = 'none';
+            }
+            
+            if (event.target === updateIssueModal) {
+                updateIssueModal.style.display = 'none';
+            }
+        });
+
+        // Close buttons for modals
+        document.querySelector('#filterModal .close-btn').addEventListener('click', function() {
+            document.getElementById('filterModal').style.display = 'none';
+        });
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            updateDashboardStats();
+            displayRecentIssues();
+        }
+
+        // Run on page load
+        initializeDashboard();
+    </script>
+</body>
+</html>

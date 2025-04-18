@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Portal - Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 50%, #dbeafe 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .login-container {
+            min-height: 100vh;
+        }
+        .login-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            max-width: 400px;
+            overflow: hidden;
+        }
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .card-header {
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            color: #6b7280;
+        }
+        .input-field {
+            padding-left: 40px;
+        }
+        .btn-login {
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .floating-shapes div {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .shape-1 {
+            top: 10%;
+            left: 5%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+        .shape-2 {
+            bottom: 10%;
+            right: 5%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: #1e40af;
+        }
+        .shape-3 {
+            top: 40%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            border-radius: 30%;
+            background: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+        <div class="shape-3"></div>
+    </div>
+
+    <div class="login-container flex items-center justify-center p-4">
+        <div class="login-card shadow-2xl w-full">
+            <div class="card-header">
+                <img src="logo.png" alt="KLH Logo" class="h-20 w-20 mx-auto mb-3">
+                <h1 class="text-xl font-bold">Koneru Lakshmaiah Education Foundation</h1>
+                <p class="text-sm opacity-80 mt-1">Excellence in Education Since 1980</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="bg-blue-50 text-blue-800 px-4 py-3 rounded-lg mb-6">
+                    <div id="greeting" class="text-center font-medium"></div>
+                </div>
+                
+                <h2 class="text-xl font-bold text-center text-gray-800 mb-6">Student Exam Portal</h2>
+                
+                <form id="loginForm" class="space-y-4">
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input 
+                            type="text" 
+                            id="rollNumber" 
+                            placeholder="Enter Roll Number" 
+                            required
+                            class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="Enter Password" 
+                            required
+                            class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                    </div>
+                    
+                    <div id="errorMessage" class="text-red-500 text-center hidden"></div>
+
+                    <button 
+                        type="submit" 
+                        class="btn-login w-full text-white py-3 rounded-lg font-medium text-lg"
+                    >
+                        Login
+                    </button>
+                </form>
+                
+                <div class="mt-5 text-center">
+                    <a href="#" class="text-blue-600 hover:underline text-sm">Forgot Password?</a>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200 text-center text-gray-500 text-xs">
+                    &copy; 2025 KLH University. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingElement = document.getElementById('greeting');
+            
+            if (hour >= 5 && hour < 12) {
+                greetingElement.textContent = "Good Morning! Welcome to KLEF Exam Portal 🌞";
+            } else if (hour >= 12 && hour < 17) {
+                greetingElement.textContent = "Good Afternoon! Welcome to KLEF Exam Portal 🌤️";
+            } else {
+                greetingElement.textContent = "Good Evening! Welcome to KLEF Exam Portal 🌙";
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const rollNumber = document.getElementById('rollNumber').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (rollNumber === password) {
+                localStorage.setItem('userRollNumber', rollNumber);
+                
+                if (rollNumber.toLowerCase() === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'main.html';
+                }
+            } else {
+                errorMessage.textContent = "Invalid credentials. Password must match the roll number.";
+                errorMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    errorMessage.classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        updateGreeting();
+        setInterval(updateGreeting, 60000);
+    </script>
+</body>
+</html>

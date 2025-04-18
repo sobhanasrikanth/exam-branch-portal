@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Hall Ticket Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-ticket-entry {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .error-message {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #hallTicket, #hallTicket * {
+                visibility: visible;
+            }
+            #hallTicket {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .print-hide {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="container mx-auto max-w-5xl">
+        <div class="bg-white shadow-2xl rounded-2xl p-8 space-y-6">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">
+                Hall Ticket Generator
+                <div class="text-sm text-gray-500 font-normal">KL Deemed to be University</div>
+            </h1>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Semester</label>
+                            <select id="semester" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Semester</option>
+                                <option value="odd">ODD Semester</option>
+                                <option value="even">EVEN Semester</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Exam Type</label>
+                            <select id="examType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Exam Type</option>
+                                <option value="in1">Internal Exam 1</option>
+                                <option value="in2">Internal Exam 2</option>
+                                <option value="lab">Lab Exam</option>
+                                <option value="end">End Semester Exam</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Student Roll Number</label>
+                        <input 
+                            type="text" 
+                            id="rollNumber" 
+                            readonly 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+                        >
+                    </div>
+
+                    <button 
+                        id="generateBtn" 
+                        class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center space-x-2"
+                    >
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Generate Hall Ticket</span>
+                    </button>
+                    
+                    <!-- Error Message Area -->
+                    <div id="errorMessage" class="hidden error-message mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center">
+                        <strong class="font-bold">Hall Ticket Not Available!</strong>
+                        <span id="errorMessageText" class="block sm:inline">The hall ticket for this exam has not been released yet. Please check back later.</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-dashed border-gray-300 flex flex-col items-center justify-center">
+                    <img 
+                        id="previewPhoto"
+                        src="profile.png" 
+                        alt="Student Photo Preview" 
+                        class="mb-4 rounded-lg w-40 h-40 object-cover"
+                    >
+                    <p class="text-center text-gray-500">Default Student Photo</p>
+                </div>
+            </div>
+
+            <div id="hallTicket" class="hidden animate-ticket-entry bg-white border-2 border-gray-300 p-8 rounded-lg relative">
+                <div class="absolute top-4 right-4 space-x-2 print-hide">
+                    <button id="printBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                        <i class="fas fa-print mr-2"></i>Print
+                    </button>
+                    <button id="downloadBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                        <i class="fas fa-download mr-2"></i>Download PDF
+                    </button>
+                </div>
+
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">KL DEEMED TO BE UNIVERSITY</h2>
+                    <h3 class="text-lg text-gray-600">Examination Hall Ticket</h3>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-6 relative">
+                    <div class="col-span-2 space-y-4">
+                        <div>
+                            <strong class="text-gray-600">Roll Number:</strong>
+                            <div id="displayRollNumber" class="text-lg font-semibold"></div>
+                        </div>
+                        <div>
+                            <strong class="text-gray-600">Semester:</strong>
+                            <div id="displaySemester" class="text-lg font-semibold"></div>
+                        </div>
+                        <div>
+                            <strong class="text-gray-600">Exam Type:</strong>
+                            <div id="displayExamType" class="text-lg font-semibold"></div>
+                        </div>
+                    </div>
+                    <div class="col-span-1 flex justify-end">
+                        <img 
+                            id="hallTicketPhoto"
+                            src="profile.png" 
+                            alt="Student Photo" 
+                            class="w-40 h-40 object-cover border-2 border-gray-300 rounded-lg"
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-xl font-semibold mb-4">Exam Schedule</h4>
+                    <table id="courseSchedule" class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border p-2">Course Code</th>
+                                <th class="border p-2">Course Name</th>
+                                <th class="border p-2">Date & Time</th>
+                                <th class="border p-2">Venue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="border-t pt-4 text-center text-gray-500 text-sm">
+                    © 2025 KL Deemed to be University. All Rights Reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ensure roll number is retrieved from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const rollNumber = localStorage.getItem('userRollNumber');
+            if (!rollNumber || rollNumber === 'admin') {
+                alert('Please login first');
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('rollNumber').value = rollNumber;
+        });
+
+        // Courses data
+        const courses = [
+            { code: "23CY1002", name: "PHYSICAL CHEMISTRY AND THERMODYNAMICS" },
+            { code: "23CS03HF", name: "ADVANCED ALGORITHMS & DATA STRUCTURES" },
+            { code: "23CI2001", name: "ADAPTIVE SOFTWARE ENGINEERING" },
+            { code: "23MT2014", name: "THEORY OF COMPUTATION" },
+            { code: "23CS2104E/23CS2104R", name: "OPERATING SYSTEMS" },
+            { code: "23EC2210R", name: "NETWORK PROTOCOLS AND SECURITY" },
+            { code: "23CS2103R", name: "ADVANCED OBJECT-ORIENTED PROGRAMMING" }
+        ];
+
+        // Exam dates
+        const examDates = {
+            odd: {
+                in1: "September 1-4, 2024",
+                in2: "November 17-20, 2024",
+                lab: "October 21-26, 2024",
+                end: "November 25 - December 7, 2024"
+            },
+            even: {
+                in1: "February 9-12, 2025",
+                in2: "April 20-23, 2025",
+                lab: "March 24-29, 2025",
+                end: "April 28 - May 10, 2025"
+            }
+        };
+
+        // Exam type full names
+        const examTypeNames = {
+            in1: "Internal Examination 1",
+            in2: "Internal Examination 2",
+            lab: "Laboratory Examination",
+            end: "End Semester Examination"
+        };
+
+        // Array of possible venues
+        const venues = ["AB-1 204", "AB-2 303", "NB-2 105", "CL-1 208", "ML-3 101", "SL-2 403"];
+
+        // Helper Functions
+        function randomDateInRange(startDate, endDate) {
+            const timeDiff = endDate.getTime() - startDate.getTime();
+            const randomTime = Math.random() * timeDiff;
+            return new Date(startDate.getTime() + randomTime);
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        function generateRandomTime() {
+            const hours = Math.floor(Math.random() * 8) + 9;
+            const minutes = Math.random() < 0.5 ? "00" : "30";
+            const ampm = hours < 12 ? "AM" : "PM";
+            const displayHours = hours > 12 ? hours - 12 : hours;
+            return `${displayHours}:${minutes} ${ampm}`;
+        }
+
+        function parseDateRange(dateRange) {
+            const currentYear = new Date().getFullYear();
+            
+            try {
+                const parts = dateRange.split('-');
+                let startDateStr, endDateStr;
+                
+                if (dateRange.includes('December') || dateRange.includes('May')) {
+                    startDateStr = parts[0].trim();
+                    endDateStr = parts[1].trim();
+                    
+                    const yearMatch = dateRange.match(/\d{4}/);
+                    const year = yearMatch ? yearMatch[0] : currentYear;
+                    
+                    if (!startDateStr.includes(year)) {
+                        startDateStr += `, ${year}`;
+                    }
+                    if (!endDateStr.includes(year)) {
+                        endDateStr += `, ${year}`;
+                    }
+                } else {
+                    const monthYearPart = dateRange.substring(dateRange.indexOf(' ')).trim();
+                    startDateStr = parts[0].trim() + monthYearPart;
+                    endDateStr = parts[1].trim() + monthYearPart;
+                }
+                
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(endDateStr);
+                
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    throw new Error("Invalid date format");
+                }
+                
+                return { startDate, endDate };
+            } catch (error) {
+                console.error("Date parsing error:", error);
+                
+                const today = new Date();
+                const nextWeek = new Date();
+                nextWeek.setDate(today.getDate() + 7);
+                
+                return { startDate: today, endDate: nextWeek };
+            }
+        }
+
+        // Function to check if hall ticket is available
+        function isHallTicketAvailable(semester, examType) {
+            // Get hall ticket settings from localStorage
+            const settings = JSON.parse(localStorage.getItem('hallTicketSettings')) || {};
+            const key = `${semester}-${examType}`;
+            
+            // Return true if the specific ticket type is enabled, false otherwise
+            return settings[key] === true;
+        }
+
+        // Function to show error message
+        function showErrorMessage(message) {
+            const errorMessageBox = document.getElementById('errorMessage');
+            const errorMessageText = document.getElementById('errorMessageText');
+            
+            errorMessageText.textContent = message;
+            errorMessageBox.classList.remove('hidden');
+            
+            // Hide the hall ticket if it's showing
+            document.getElementById('hallTicket').classList.add('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const semester = document.getElementById('semester').value;
+            const examType = document.getElementById('examType').value;
+            const rollNumber = document.getElementById('rollNumber').value;
+            
+            // Hide any existing error message
+            document.getElementById('errorMessage').classList.add('hidden');
+            
+            if (!semester || !examType) {
+                alert('Please select both semester and exam type');
+                return;
+            }
+
+            // Check if hall ticket is available for this exam
+            if (!isHallTicketAvailable(semester, examType)) {
+                showErrorMessage(`Hall ticket for ${examTypeNames[examType]} of ${semester.toUpperCase()} Semester has not been released yet. Please check back later or contact the Exam Branch.`);
+                return;
+            }
+
+            // Copy preview photo to hall ticket
+            const previewPhoto = document.getElementById('previewPhoto');
+            const hallTicketPhoto = document.getElementById('hallTicketPhoto');
+            hallTicketPhoto.src = previewPhoto.src;
+
+            // Update hall ticket details
+            document.getElementById('displayRollNumber').textContent = rollNumber;
+            document.getElementById('displaySemester').textContent = 
+                semester.toUpperCase() + ' Semester 2024-25';
+            document.getElementById('displayExamType').textContent = examTypeNames[examType];
+
+            const dateRange = examDates[semester][examType];
+            const { startDate, endDate } = parseDateRange(dateRange);
+            
+            const courseTableBody = document.getElementById('courseTableBody');
+            courseTableBody.innerHTML = '';
+            
+            courses.forEach((course) => {
+                const row = document.createElement('tr');
+                row.className = 'border';
+                
+                const cells = [
+                    { content: course.code },
+                    { content: course.name },
+                    { 
+                        content: `${formatDate(randomDateInRange(startDate, endDate))}, ${generateRandomTime()}` 
+                    },
+                    { content: venues[Math.floor(Math.random() * venues.length)] }
+                ];
+
+                cells.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell.content;
+                    td.className = 'border p-2';
+                    row.appendChild(td);
+                });
+                
+                courseTableBody.appendChild(row);
+            });
+
+            // Show hall ticket
+            const hallTicket = document.getElementById('hallTicket');
+            hallTicket.classList.remove('hidden');
+        });
+
+        // Print and Download Buttons
+        document.getElementById('printBtn').addEventListener('click', () => {
+            window.print();
+        });
+        
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const hallTicket = document.getElementById('hallTicket');
+            
+            // Ensure html2pdf is loaded before calling
+            if (window.html2pdf) {
+                window.html2pdf().from(hallTicket).save('hall_ticket.pdf');
+            } else {
+                alert('PDF download library not loaded. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
