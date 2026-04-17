@@ -1,5 +1,3 @@
----
-
 ## 🚀 Features
 
 ### 🎓 Student Side
@@ -19,8 +17,6 @@
 * Toggle availability of hall tickets by exam and semester
 * Clear completed issues by type or all
 
----
-
 ## 🧠 Technologies Used
 
 * **HTML5**
@@ -28,8 +24,6 @@
 * **JavaScript (Vanilla)**
 * **Font Awesome Icons**
 * **LocalStorage** for temporary frontend data persistence
-
----
 
 ## 🧪 How to Run the Project
 
@@ -45,8 +39,6 @@
    * Download the files or clone the repo
    * Open `index.html` in a browser
 
----
-
 ## 🔐 Login Info
 
 | Role    | Username           | Password            |
@@ -56,14 +48,10 @@
 
 > Example: `123456` / `123456`
 
----
-
 ## 👨‍💻 Team Project
 
 1. Sobhan
 2. Hrishikesh
-
----
 
 ## 📦 Future Improvements
 
@@ -71,5 +59,3 @@
 * Email/SMS notifications
 * Role-based access control
 * Real-time query status updates
-
----
